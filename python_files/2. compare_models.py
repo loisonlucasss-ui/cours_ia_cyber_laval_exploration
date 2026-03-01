@@ -76,7 +76,7 @@ model_gb
 # To fairly evaluate each model, we use **cross-validation**.
 # This means we train and test the model on different parts of the data multiple times, so we can see how well it generalizes.
 #
-# We use `cross_val_predict` to get predictions for every example in the dataset (each time, the example was in the test set).
+# We use `cross_val_score` to get the score for every fold in cross validation.
 
 # %%
 from sklearn.model_selection import cross_val_score
@@ -84,9 +84,6 @@ from sklearn.model_selection import cross_val_score
 cv_lr = cross_val_score(model_lr, X, y, cv=5)
 cv_rf = cross_val_score(model_rf, X, y, cv=5)
 cv_gb = cross_val_score(model_gb, X, y, cv=5)
-
-# %%
-cv_rf
 
 # %% [markdown]
 # ## Question 6: Among the three models, which one has the best recall?
@@ -96,85 +93,45 @@ cv_rf
 # - **Precision**: among all predictions for a class, how many were correct?
 # - **Recall**: among all real examples of a class, how many were found?
 # - **F1-score**: a balance between precision and recall
+#
+# We will define the positive class as "North Central".
 
 # %%
-from sklearn.metrics import classification_report
-
-print("=== Logistic Regression ===")
-print(classification_report(y, y_pred_lr))
+y_pred_lr = model_lr.predict(X_test)
 
 # %%
-print("=== Random Forest ===")
-print(classification_report(y, y_pred_rf))
+from skore import EstimatorReport
+report = EstimatorReport(estimator = model_lr,
+                X_test = X_test,
+                y_test = y_test)
+report.help()
 
 # %%
-print("=== Gradient Boosting ===")
-print(classification_report(y, y_pred_gb))
+report.metrics.summarize(pos_label="North Central").frame()
 
 # %% [markdown]
-# Look at the **weighted avg recall** row for each model.
 # Which model has the highest recall?
 
 # %% [markdown]
 # ## Question 7: Which model has the best practical application?
 #
-# Let's visualize the confusion matrix for each model.
-# This shows us which classes the model confuses with each other.
+# Let's say that it costs 10 to do a false positive error, while it costs 1 to do a false negative error. Correctly predicting a positive example gains 5, while correctly predicting a negative example gains 2. 
 
 # %%
-from sklearn.metrics import ConfusionMatrixDisplay
-import matplotlib.pyplot as plt
-
-fig, axes = plt.subplots(1, 3, figsize=(20, 6))
-
-for ax, y_pred, name in zip(
-    axes,
-    [y_pred_lr, y_pred_rf, y_pred_gb],
-    ["Logistic Regression", "Random Forest", "Gradient Boosting"],
-):
-    ConfusionMatrixDisplay.from_predictions(y, y_pred, ax=ax, xticks_rotation=90)
-    ax.set_title(name)
-
-plt.tight_layout()
 
 # %% [markdown]
-# Look at the diagonal (correct predictions) and the off-diagonal
-# (errors). Which model makes the most meaningful predictions in practice?
+# Which model makes the most meaningful predictions in practice?
 
 # %% [markdown]
 # ## Question 8: Which model generalizes the best?
 #
 # To understand generalization, we compare the **training score** (how well the model fits the data it was trained on) with the **test score** (how well it performs on unseen data).
 #
-# A big gap between the two means the model is **overfitting**.
+# A big gap between the two means the model is **overfitting**.  
+#
+# We don't want to do this only once, but several times. Use cross validation for that. You can either use cross validation from scikit-learn, or the CrossValidationReport from skore.
 
 # %%
-from sklearn.model_selection import cross_validate
-import pandas as pd
-
-models = {
-    "Logistic Regression": model_lr,
-    "Random Forest": model_rf,
-    "Gradient Boosting": model_gb,
-}
-
-results = []
-for name, model in models.items():
-    cv_results = cross_validate(
-        model, X, y, cv=5, scoring="accuracy",
-        return_train_score=True
-    )
-    results.append({
-        "Model": name,
-        "Train accuracy (mean)": cv_results["train_score"].mean(),
-        "Test accuracy (mean)": cv_results["test_score"].mean(),
-        "Gap (train - test)": (
-            cv_results["train_score"].mean()
-            - cv_results["test_score"].mean()
-        ),
-    })
-
-pd.DataFrame(results)
 
 # %% [markdown]
 # Which model has the smallest gap between train and test accuracy?

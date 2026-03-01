@@ -2,7 +2,7 @@
 authors = ["Marie Sacksick <marie@probabl.ai>"]
 channels = ["conda-forge"]
 name = "cours_ia_cyber_laval_exploration"
-platforms = ["linux-64", "osx-64", "osx-arm64"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 version = "0.1.0"
 
 [tasks]
@@ -15,6 +15,7 @@ jupytext = ">=1.19.1,<2"
 scikit-learn = ">=1.8.0,<2"
 skrub = ">=0.7.2,<0.8"
 ipykernel = ">=7.2.0,<8"
+skore = ">=0.13.0,<0.14"
 
 [pypi-dependencies]
 midwest-survey-models = { git = "https://github.com/MarieSacksick/midwest_survey_models" }

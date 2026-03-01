@@ -27,4 +27,4 @@ Thanks to the notebook "compare models":
 7. Among the three models, which one has the best practical application?  
 8. Among the three models, which one generalizes the best?  
 
-Once all these are done, you can continue to the second part of the tutorial (https://github.com/MarieSacksick/midwest_survey_models).
+Once all these are done, you can continue to the [second part of the tutorial](https://github.com/MarieSacksick/midwest_survey_models).
